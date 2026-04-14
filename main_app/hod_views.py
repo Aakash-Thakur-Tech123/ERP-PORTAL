@@ -682,19 +682,49 @@ def send_staff_notification(request):
         return HttpResponse("False")
 
 
+# def delete_staff(request, staff_id):
+#     staff = get_object_or_404(CustomUser, staff_id=staff_id)
+#     staff.delete()
+#     messages.success(request, "Staff deleted successfully!")
+#     return redirect(reverse('manage_staff'))
+
+
 def delete_staff(request, staff_id):
-    staff = get_object_or_404(CustomUser, staff__id=staff_id)
-    staff.delete()
+    staff = get_object_or_404(Staff, id=staff_id)
+
+    # remove subject link first (VERY IMPORTANT)
+    Subject.objects.filter(staff=staff).update(staff=None)
+
+    LeaveReportStaff.objects.filter(staff=staff).delete()
+    FeedbackStaff.objects.filter(staff=staff).delete()
+
+    # finally delete user
+    staff.admin.delete()
+
     messages.success(request, "Staff deleted successfully!")
-    return redirect(reverse('manage_staff'))
+    return redirect('manage_staff')
+    
+
+# def delete_student(request, student_id):
+#     student = get_object_or_404(CustomUser, student__id=student_id)
+#     student.delete()
+#     messages.success(request, "Student deleted successfully!")
+#     return redirect(reverse('manage_student'))
 
 
 def delete_student(request, student_id):
-    student = get_object_or_404(CustomUser, student__id=student_id)
-    student.delete()
-    messages.success(request, "Student deleted successfully!")
-    return redirect(reverse('manage_student'))
+    student = get_object_or_404(Student, id=student_id)
 
+    # delete all related data first
+    AttendanceReport.objects.filter(student=student).delete()
+    LeaveReportStudent.objects.filter(student=student).delete()
+    FeedbackStudent.objects.filter(student=student).delete()
+
+    # finally delete user
+    student.admin.delete()
+
+    messages.success(request, "Student deleted successfully!")
+    return redirect('manage_student')
 
 def delete_course(request, course_id):
     course = get_object_or_404(Course, id=course_id)
@@ -709,9 +739,13 @@ def delete_course(request, course_id):
 
 def delete_subject(request, subject_id):
     subject = get_object_or_404(Subject, id=subject_id)
+
+    Attendance.objects.filter(subject=subject).delete()
+    AttendanceReport.objects.filter(attendance__subject=subject).delete()
+
     subject.delete()
     messages.success(request, "Subject deleted successfully!")
-    return redirect(reverse('manage_subject'))
+    return redirect('manage_subject')
 
 
 def delete_session(request, session_id):
