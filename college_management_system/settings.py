@@ -14,6 +14,8 @@ import dj_database_url
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +31,7 @@ SECRET_KEY = 'f2zx8*lb*em*-*b+!&1lpp&$_9q9kmkar+l3x90do@s(+sr&x7'  # Consider us
 DEBUG = True
 
 # ALLOWED_HOSTS = ['smswithdjango.herokuapp.com']
-ALLOWED_HOSTS = ['*']  # Not recommended but useful in dev mode
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']  # Not recommended but useful in dev mode
 
 
 # Application definition
@@ -91,7 +93,7 @@ WSGI_APPLICATION = 'college_management_system.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / "db.sqlite3",
     }
     # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',
@@ -163,11 +165,12 @@ SESSION_SAVE_EVERY_REQUEST = True  # Save session on every request to extend exp
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-
-EMAIL_HOST_USER = os.environ.get('kumarshiv212005@gmail.com') 
-EMAIL_HOST_PASSWORD = os.environ.get('1234123456785678')
 EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('kumar21@mail.com') 
+EMAIL_HOST_PASSWORD = os.environ.get('123456789')
+
 # DEFAULT_FROM_EMAIL = "School Management System <admin@admin.com>"
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
